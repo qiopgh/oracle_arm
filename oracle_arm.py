@@ -196,7 +196,7 @@ class FileParser:
 
 class InsCreate:
     shape = 'VM.Standard.A1.Flex'
-    sleep_time = 5.0
+    sleep_time = 61.0
     try_count = 0
     desp = ""
 
@@ -232,8 +232,8 @@ class InsCreate:
                 if e.status == 429 and e.code == 'TooManyRequests' and e.message == 'Too many requests for the user':
                     # 被限速了，改一下时间
                     print("请求太快了，自动调整请求时间ing")
-                    if self.sleep_time < 60:
-                        self.sleep_time += 10
+                    if self.sleep_time < 720:
+                        self.sleep_time += 31
                 elif not (e.status == 500 and e.code == 'InternalError'
                           and e.message == 'Out of host capacity.'):
                     if "Service limit" in e.message and e.status==400:
@@ -241,13 +241,14 @@ class InsCreate:
                         # 可能是别的错误，也有可能是 达到上限了，要去查看一下是否开通成功，也有可能错误了
                         self.logp("❌如果看到这条推送,说明刷到机器，但是开通失败了，请后台检查你的cpu，内存，硬盘占用情况，并释放对应的资源 返回值:{},\n 脚本停止".format(e))
                     else:
-                        self.logp("❌发生错误,脚本停止!请检查参数或github反馈/查找 相关问题:{}".format(e))
-                    telegram(self.desp)
-                    raise e
+                        # 被限速了，改一下时间
+                        print("请求太快了，自动调整请求时间ing")
+                        if self.sleep_time < 720:
+                            self.sleep_time += 31
                 else:
                     # 没有被限速，恢复减少的时间
                     print("目前没有请求限速,快马加刷中")
-                    if self.sleep_time > 15:
+                    if self.sleep_time > 25:
                         self.sleep_time -= 10
                 print("本次返回信息:",e)
                 time.sleep(self.sleep_time)
